@@ -1,4 +1,4 @@
-package com.sorbac.codeJam.qualification2014.magicTrick;
+package com.sorbac.codeJam.year2014.qualification.magicTrick;
 
 import java.io.*;
 
