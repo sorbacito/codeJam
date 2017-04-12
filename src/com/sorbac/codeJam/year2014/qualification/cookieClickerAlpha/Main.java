@@ -1,4 +1,4 @@
-package com.sorbac.codeJam.qualification2014.cookieClickerAlpha;
+package com.sorbac.codeJam.year2014.qualification.cookieClickerAlpha;
 
 import java.io.*;
 
