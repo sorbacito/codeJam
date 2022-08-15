@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    useTestNG()
+}
+
+dependencies {
+    implementation 'org.testng:testng:7.1.0'
+
+    //compile 'junit:junit:4.12'
+    // https://mvnrepository.com/artifact/org.testng/testng
+    //testImplementation group: 'org.testng', name: 'testng', version: '5.7'
+    implementation 'org.hamcrest:hamcrest:2.2'
+}
