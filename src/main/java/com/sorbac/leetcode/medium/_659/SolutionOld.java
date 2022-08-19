@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-public class Solution {
+public class SolutionOld {
     public boolean isPossible(int[] nums) {
         TreeMap<Integer, TreeSet<Integer>> valueToIndex = new TreeMap<>(Comparator.reverseOrder());
         for (int i = 0; i < nums.length; i++) {

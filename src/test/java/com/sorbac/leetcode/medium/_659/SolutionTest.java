@@ -11,7 +11,8 @@ public class SolutionTest {
     public Object[][] dataProvider() {
         return new Object[][] {
                 {new int[] {1,2,3,3,4,5}, true},
-                {new int[] {1,2,3,3,4,4,5,5}, true}
+                {new int[] {1,2,3,3,4,4,5,5}, true},
+                {new int[] {1,2,3,4,4,5}, false}
         };
     }
 
