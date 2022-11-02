@@ -31,10 +31,5 @@ jobs:
       with:
         arguments: build
     - name: Report Tests Results
-      uses: dorny/test-reporter@v1
+      uses: starburstdata/action-testng-report@v1
       if: always()
-      with:
-        name: Gradle Tests
-        path: build/test-results/*.xml
-        reporter: java-junit
-        fail-on-error: true
