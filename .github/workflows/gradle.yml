@@ -31,5 +31,5 @@ jobs:
       with:
         arguments: build
     - name: Report Tests Results
-      uses: starburstdata/action-testng-report@v1
+      uses: starburstdata/action-testng-report@v1.0.3
       if: always()
