@@ -35,3 +35,4 @@ jobs:
       if: always()
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        report_paths: build/test-results/test/*.xml
