@@ -30,9 +30,4 @@ jobs:
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: build
-    - name: Report Tests Results
-      uses: starburstdata/action-testng-report@v1.0.3
-      if: always()
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        report_paths: "**/TEST-*.xml"
+
