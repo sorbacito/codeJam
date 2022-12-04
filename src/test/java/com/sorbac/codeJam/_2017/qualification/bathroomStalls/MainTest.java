@@ -1,6 +1,5 @@
 package com.sorbac.codeJam._2017.qualification.bathroomStalls;
 
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,7 +36,7 @@ public class MainTest {
         test(500, 117, 3L, 2L);
     }
 
-    @Test @Ignore("Fails, ignored for now")
+    @Test(enabled = false, description = "Fails, ignored for now")
     public void testMax() {
         test(999999999999999999L, 999999999999999999L, 0L, 0L);
         test(999999999999999999L, 999999999999999998L, 1L, 0L);
@@ -47,7 +46,7 @@ public class MainTest {
         /*long[] myResult = Main.getLastPersonMaxMinPriorityQueue(initialSpace, initialNoOfPeople);
         assertThat(myResult[0], is(expectedMax));
         assertThat(myResult[1], is(expectedMin));*/
-        long[] myResultAlternative = Main.getLastPersonMaxMinCalculated(initialSpace, initialNoOfPeople);
+        long[] myResultAlternative = com.sorbac.codeJam._2017.qualification.bathroomStalls.Main.getLastPersonMaxMinCalculated(initialSpace, initialNoOfPeople);
         assertThat(myResultAlternative[0], is(expectedMax));
         assertThat(myResultAlternative[1], is(expectedMin));
     }
