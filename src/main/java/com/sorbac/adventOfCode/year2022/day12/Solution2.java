@@ -4,15 +4,20 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Scanner;
 
-public class Solution {
+public class Solution2 {
     public static final String INPUT_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day12/input.txt";
     public static final String TEST_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day12/test.txt";
 
     private final List<String> lines;
 
-    public Solution(List<String> lines) {
+    public Solution2(List<String> lines) {
         this.lines = lines;
     }
 
@@ -23,16 +28,31 @@ public class Solution {
         while (in.hasNextLine()) {
             lines.add(in.nextLine());
         }
-        System.out.println(new Solution(lines).shortestPathToEnd());
+        System.out.println(new Solution2(lines).shortestPathToEnd());
     }
 
     private int shortestPathToEnd() {
+        List<Pair> starts = findStarts();
+        int minSteps = Integer.MAX_VALUE;
+        for (Pair start : starts) {
+            minSteps = Math.min(minSteps, getMinNumberOfSteps(start));
+        }
+        return minSteps;
+    }
+
+    private List<Pair> findStarts() {
+        List<Pair> starts = new ArrayList<>();
+        starts.addAll(findChar('S'));
+        starts.addAll(findChar('a'));
+        return starts;
+    }
+
+    private int getMinNumberOfSteps(Pair start) {
         int sizeX = lines.size();
         int sizeY = lines.get(0).length();
         int[][] steps = initDijkstra(sizeX, sizeY);
         boolean[][] visited = new boolean[sizeX][sizeY];
         Queue<Pair> visit = new PriorityQueue<>();
-        Pair start = findChar(sizeX, sizeY, 'S');
         visit.add(start);
         steps[start.x][start.y] = 0;
         while (visit.size() > 0) {
@@ -59,8 +79,9 @@ public class Solution {
                 visited[cur.x][cur.y] = true;
             }
         }
-        Pair end = findChar(sizeX, sizeY, 'E');
-        return steps[end.x][end.y];
+        Pair end = findChar('E').get(0);
+        int numberOfSteps = steps[end.x][end.y];
+        return numberOfSteps;
     }
 
     private boolean isValidXY(int x, int y, int sizeX, int sizeY) {
@@ -76,15 +97,18 @@ public class Solution {
         };
     }
 
-    private Pair findChar(int sizeX, int sizeY, char s) {
+    private List<Pair> findChar(char s) {
+        List<Pair> positions = new ArrayList<>();
+        int sizeX = lines.size();
+        int sizeY = lines.get(0).length();
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
                 if (lines.get(x).charAt(y) == s) {
-                    return new Pair(x, y, 0);
+                    positions.add(new Pair(x, y, 0));
                 }
             }
         }
-        return null;
+        return positions;
     }
 
     private int[][] initDijkstra(int sizeX, int sizeY) {
