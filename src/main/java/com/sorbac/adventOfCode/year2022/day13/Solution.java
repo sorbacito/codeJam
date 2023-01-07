@@ -7,77 +7,106 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solution {
-    public static final String INPUT_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day12/input.txt";
-    public static final String TEST_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day12/test.txt";
+    public static final String INPUT_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day13/input.txt";
+    public static final String TEST_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day13/test.txt";
 
-    private final String line1;
-    private final String line2;
+    private final List<Object> left;
+    private final List<Object> right;
 
-    public Solution(String line1, String line2) {
-        this.line1 = line1;
-        this.line2 = line2;
+    public Solution(Pair left, Pair right) {
+        this.left = (List<Object>) left.result;
+        this.right = (List<Object>) right.result;
     }
+
+    public static Pair readItem(String line) {
+        return readItem(line, 0);
+    }
+    public static Pair readItem(String line, Integer idx) {
+        if (Character.isDigit(line.charAt(idx))) {
+            return readInt(line, idx);
+        } else {
+            idx++;
+            List<Object> list = new ArrayList<>();
+            while (line.charAt(idx) != ']') {
+                if (line.charAt(idx) == ',') idx = idx + 1;
+                Pair item = readItem(line, idx);
+                idx = item.idx;
+                list.add(item.result);
+            }
+            idx++;
+            return new Pair(list, idx);
+        }
+    }
+
+    private static Pair readInt(String line, Integer idx) {
+        int result = 0;
+        while(Character.isDigit(line.charAt(idx))) {
+            result *= 10;
+            result += (line.charAt(idx++) - '0');
+        }
+        return new Pair(result, idx);
+    }
+
+    private record Pair(Object result, int idx) {}
 
     public static void main(String[] args) throws FileNotFoundException {
-        //Scanner in = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream(INPUT_FILE))));
-        Scanner in = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream(TEST_FILE))));
+        Scanner in = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream(INPUT_FILE))));
         int sum = 0;
         int i = 1;
+        List<Object> lists = new ArrayList<>();
+        List<List<Integer>> packet2 = List.of(List.of(2));
+        lists.add(packet2);
+        List<List<Integer>> packet6 = List.of(List.of(6));
+        lists.add(packet6);
         while (in.hasNextLine()) {
-            String line1 = in.nextLine();
-            String line2 = in.nextLine();
+            Pair line1 = readItem(in.nextLine(), 0);
+            Pair line2 = readItem(in.nextLine(), 0);
+            lists.add(line1.result);
+            lists.add(line2.result);
             if (in.hasNextLine()) in.nextLine();
-            if (new Solution(line1, line2).isSmaller()) sum += i++;
+            if (new Solution(line1, line2).isInRightOrder()) {
+                sum += i;
+            }
+            i++;
         }
         System.out.println(sum);
-    }
-
-    public boolean isSmaller() {
-        Integer i1 = 0;
-        Integer i2 = 0;
-        int compRes = 0;
-        while (i1 < line1.length() && i2 < line2.length()) {
-            char c1 = line1.charAt(i1);
-            char c2 = line2.charAt(i2);
-            if (c1 == '[' && c2 == '[') {
-                compRes = compareLists(i1, i2);
-                if (compRes != 0) break;
-            } else if (c1 != '[' && c2 != '[') {
-                compRes = compareInts(i1, i2);
-                if (compRes != 0) break;
-            } else {
-                compRes = compareDifferent(i1, i2);
-                if (compRes != 0) break;
+        lists.sort((o1, o2) -> compareLists((List<Object>) o1, (List<Object>) o2));
+        int decoder = 1;
+        for (int j = 0; j < lists.size(); j++) {
+            if (lists.get(j) == packet2 || lists.get(j) == packet6) {
+                decoder *= j + 1;
             }
         }
-        return compRes < 0;
+        System.out.println(decoder);
     }
 
-    private int compareInts(Integer i1, Integer i2) {
-        int val1 = readInt(line1, i1);
-        int val2 = readInt(line2, i2);
-        return Integer.compare(val1, val2);
+    public boolean isInRightOrder() {
+        return compareLists(this.left, this.right) < 0;
     }
 
-    private int readInt(String s, Integer i) {
-        int firstComma = s.substring(i).indexOf(',');
-        int firstStartList = s.substring(i).indexOf('[');
-        int firstEndList = s.substring(i).indexOf(']');
-        int firstList = firstStartList > 0 ? firstStartList : firstEndList;
-        int delIdx = Math.min(firstComma, firstList);
-        int val = Integer.parseInt(line1.substring(i, i + delIdx));
-        i += delIdx;
-        return val;
+    private static int compareLists(List<Object> left, List<Object> right) {
+        int idx = 0;
+        int sizeLeft = left.size();
+        int sizeRight = right.size();
+        int maxIdx = Math.min(sizeLeft, sizeRight);
+        int comp;
+        while (idx < maxIdx) {
+            Object curLeft = left.get(idx);
+            Object curRight = right.get(idx);
+            if (curLeft instanceof List<?> && curRight instanceof List<?>) {
+                comp = compareLists((List<Object>) curLeft, (List<Object>) curRight);
+            } else if (curLeft instanceof Integer && curRight instanceof Integer) {
+                comp = ((Integer) curLeft).compareTo((Integer) curRight);
+            } else {
+                if (curLeft instanceof Integer) {
+                    comp = compareLists(List.of(curLeft), (List<Object>) curRight);
+                } else {
+                    comp = compareLists((List<Object>) curLeft, List.of(curRight));
+                }
+            }
+            if (comp != 0) return comp;
+            idx++;
+        }
+        return sizeLeft - sizeRight;
     }
-
-    private int compareLists(Integer i1, Integer i2) {
-        i1++; i2++;
-
-        return 0;
-    }
-
-    private int compareDifferent(Integer i1, Integer i2) {
-        return 0;
-    }
-
 }
