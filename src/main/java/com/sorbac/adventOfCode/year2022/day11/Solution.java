@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Solution {
-    public static final String INPUT_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day11/input.txt";
+    public static final String INPUT_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day11/input1.txt";
     public static final String TEST_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day11/test.txt";
 
     public Solution() {
