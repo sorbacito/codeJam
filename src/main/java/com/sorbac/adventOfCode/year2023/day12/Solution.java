@@ -4,20 +4,17 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Solution {
 
     public static void main(String[] args) throws FileNotFoundException {
-//        Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day12/test1.txt"))));
+        Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day12/test1.txt"))));
 //        Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day12/test11.txt"))));
-        Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day12/input1.txt"))));
-        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day12/test2.txt"))));
-//        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day12/input2.txt"))));
+//        Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day12/input1.txt"))));
+//        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day12/test2.txt"))));
+        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day12/input2.txt"))));
 
         List<String> lines1 = new ArrayList<>();
         while (in1.hasNextLine()) {
@@ -40,7 +37,7 @@ public class Solution {
             String[] lineSplit = line.split(" ");
             String springs = lineSplit[0];
             List<Integer> groups = Arrays.stream(lineSplit[1].split(",")).map(Integer::parseInt).collect(Collectors.toList());
-            ret += getArrangements(springs, groups);
+            ret += getArrangements(new HashMap<>(), springs, groups, 0, 0, 0);
 //            System.out.println(" ");
 //            getArrangements(springs, groups);
         }
@@ -60,47 +57,37 @@ public class Solution {
             groups.addAll(grps);
             groups.addAll(grps);
             groups.addAll(grps);
-            ret += getArrangements(springs, groups);
-            System.out.println("Current ret " + ret);
+            HashMap<Tuple<Integer, Integer, Integer>, Long> cache = new HashMap<>();
+            ret += getArrangements(cache, springs, groups, 0, 0, 0);
         }
 
         return ret;
     }
 
-    private static int getArrangements(String springs, List<Integer> groups) {
-        int ret = 0;
-        List<String> finArr = new ArrayList<>();
-        List<String> arrs = new ArrayList<>();
-        arrs.add(springs);
-
-        while (!arrs.isEmpty()) {
-            List<String> newArrs = new ArrayList<>();
-            for (String arr : arrs) {
-                if (isPossibleOutcome(groups, arr)) {
-                    if (arr.indexOf('?') != -1) {
-                        newArrs.add(arr.replaceFirst("\\?", "."));
-                        newArrs.add(arr.replaceFirst("\\?", "#"));
-                    } else {
-                        finArr.add(arr);
-                    }
-                } else {
-                    int b = 0;
-                }
-            }
-            arrs = newArrs;
+    private static long getArrangements(HashMap<Tuple<Integer, Integer, Integer>, Long> cache, String springs, List<Integer> groups, int curIdx, int grpIdx, int curCount) {
+        Tuple<Integer, Integer, Integer> key = new Tuple<>(curIdx, grpIdx, curCount);
+        if (cache.containsKey(key)) {
+            return cache.get(key);
+        }
+        if (curIdx == springs.length()) {
+            return (grpIdx == groups.size() && curCount == 0) || (grpIdx == groups.size() - 1 && curCount == groups.get(grpIdx)) ? 1 : 0;
         }
 
-        Comparator<List<Integer>> listComparator = getListComparator();
-
-        for (String arr : finArr) {
-            if (listComparator.compare(countGroups(arr), groups) == 0) {
-//                System.out.println(arr);
-                ret++;
-            }
+        long total = 0;
+        char c = springs.charAt(curIdx);
+        if ((c == '.' || c == '?') && curCount == 0) {
+            total += getArrangements(cache, springs, groups, curIdx + 1, grpIdx, 0);
+        } else if ((c == '.' || c == '?') && curCount > 0 && grpIdx < groups.size() && groups.get(grpIdx) == curCount) {
+            total += getArrangements(cache, springs, groups, curIdx + 1, grpIdx + 1, 0);
         }
-
-        return ret;
+        if (c == '#' || c == '?') {
+            total += getArrangements(cache, springs, groups, curIdx + 1, grpIdx, curCount + 1);
+        }
+        cache.put(key, total);
+        return total;
     }
+
+    private static record Pair(int curIdx, int grpIdx){}
 
     private static boolean isPossibleOutcome(List<Integer> groups, String arr) {
         List<String> grps = Arrays.stream(arr.split("\\.")).filter(s -> s.length() > 0).toList();
