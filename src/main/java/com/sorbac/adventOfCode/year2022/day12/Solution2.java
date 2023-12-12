@@ -12,7 +12,7 @@ import java.util.Queue;
 import java.util.Scanner;
 
 public class Solution2 {
-    public static final String INPUT_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day12/input.txt";
+    public static final String INPUT_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day12/input1.txt";
     public static final String TEST_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day12/test.txt";
 
     private final List<String> lines;
