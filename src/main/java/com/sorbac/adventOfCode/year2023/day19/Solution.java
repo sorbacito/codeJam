@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Solution {
 
@@ -26,11 +24,11 @@ public class Solution {
         long part1Answer = getPart1Answer(lines1);
         System.out.println(part1Answer);
 
-//        List<String> lines2 = new ArrayList<>();
-//        while (in2.hasNextLine()) {
-//            lines2.add(in2.nextLine());
-//        }
-//        System.out.println(getPart2Answer(lines2));
+        List<String> lines2 = new ArrayList<>();
+        while (in2.hasNextLine()) {
+            lines2.add(in2.nextLine());
+        }
+        System.out.println(getPart2Answer(lines2));
     }
 
     private static long getPart1Answer(List<String> lines) {
@@ -75,10 +73,55 @@ public class Solution {
     }
 
     private static long getPart2Answer(List<String> lines) {
-        return 0;
+        Map<String, List<Rule>> map = new HashMap<>();
+        int iL = 0;
+        while (!lines.get(iL).isEmpty()) {
+            String s = lines.get(iL).split("\\}")[0];
+            String name = s.split("\\{")[0];
+            String[] rules = s.split("\\{")[1].split(",");
+            List<Rule> rls = new ArrayList<>();
+            for (String r : rules) {
+                rls.add(Rule.of(r));
+            }
+            map.put(name, rls);
+            iL++;
+        }
+        long sum = 0;
+        List<PairRange> cur = new ArrayList<>();
+        cur.add(new PairRange(new ShapeRange(new Range(1, 4000), new Range(1, 4000), new Range(1, 4000), new Range(1, 4000)), "in"));
+        while (!cur.isEmpty()) {
+            List<PairRange> newPRs = new ArrayList<>();
+            for (PairRange pr : cur){
+                if (Objects.equals(pr.flow, "A")) {
+                    sum += pr.getSum();
+                    continue;
+                }
+                if (Objects.equals(pr.flow, "R")) {
+                    continue;
+                }
+                PairRange curPR = pr;
+                for (Rule rule : map.get(pr.flow)) {
+                    PairRange newPR;
+                    if (Objects.equals(rule.comparator, "")) {
+                        newPR = new PairRange(curPR.range, rule.newFlow);
+                    } else if (Objects.equals(rule.comparator, ">")) {
+                        newPR = curPR.moreThan(rule.value, rule.variableName, rule.newFlow);
+                        curPR = curPR.lessThan(rule.value + 1, rule.variableName);
+                    } else {
+                        newPR = curPR.lessThan(rule.value, rule.variableName, rule.newFlow);
+                        curPR = curPR.moreThan(rule.value - 1, rule.variableName);
+                    }
+                    if (newPR.getSum() > 0) {
+                        newPRs.add(newPR);
+                    }
+                }
+            }
+            cur = newPRs;
+        }
+        return sum;
     }
 
-    private record Rule(String var, String comp, Integer val, String res) {
+    private record Rule(String variableName, String comparator, Integer value, String newFlow) {
         public static Rule of(String r) {
             String[] rul = r.split(":");
             if (rul.length == 1) {
@@ -95,12 +138,12 @@ public class Solution {
         }
 
         public Function<Shape, String> getFunction() {
-            if (Objects.equals(comp, "")) {
-                return (Shape shp) -> res;
-            } else if (Objects.equals(comp, ">")) {
-                return (Shape shp) -> shp.getVal(var) > val ? res : null;
+            if (Objects.equals(comparator, "")) {
+                return (Shape shp) -> newFlow;
+            } else if (Objects.equals(comparator, ">")) {
+                return (Shape shp) -> shp.getVal(variableName) > value ? newFlow : null;
             } else {
-                return (Shape shp) -> shp.getVal(var) < val ? res : null;
+                return (Shape shp) -> shp.getVal(variableName) < value ? newFlow : null;
             }
         }
     }
@@ -119,13 +162,46 @@ public class Solution {
             return x + m + a + s;
         }
 
-        public Shape applyRule(Rule rule) {
-            if (Objects.equals(rule.comp, "")) return this;
-            if (Objects.equals(rule.var, "x")) {
-                if (Objects.equals(rule.comp, ">")) {
+    }
 
-                }
-            }
+    private record Range(int min, int max) {
+        public int getRange() {
+            return Math.max(0, max - min + 1);
+        }
+    }
+    private record ShapeRange(Range x, Range m, Range a, Range s) {
+    }
+    private record PairRange(ShapeRange range, String flow) {
+        public PairRange moreThan(int value, String field) {
+            return moreThan(value, field, flow);
+        }
+
+        public PairRange moreThan(int value, String field, String newFlow) {
+            return switch (field) {
+                case "x" -> new PairRange(new ShapeRange(new Range(Math.max(range.x.min, value + 1), range.x.max), range.m, range.a, range.s), newFlow);
+                case "m" -> new PairRange(new ShapeRange(range.x, new Range(Math.max(range.m.min, value + 1), range.m.max), range.a, range.s), newFlow);
+                case "a" -> new PairRange(new ShapeRange(range.x, range.m, new Range(Math.max(range.a.min, value + 1), range.a.max), range.s), newFlow);
+                case "s" -> new PairRange(new ShapeRange(range.x, range.m, range.a, new Range(Math.max(range.s.min, value + 1), range.s.max)), newFlow);
+                default -> throw new IllegalStateException("Unexpected value: " + field);
+            };
+        }
+
+        public PairRange lessThan(int value, String field) {
+            return lessThan(value, field, flow);
+        }
+
+        public PairRange lessThan(int value, String field, String newFlow) {
+            return switch (field) {
+                case "x" -> new PairRange(new ShapeRange(new Range(range.x.min, Math.min(range.x.max, value - 1)), range.m, range.a, range.s), newFlow);
+                case "m" -> new PairRange(new ShapeRange(range.x, new Range(range.m.min, Math.min(range.m.max, value - 1)), range.a, range.s), newFlow);
+                case "a" -> new PairRange(new ShapeRange(range.x, range.m, new Range(range.a.min, Math.min(range.a.max, value - 1)), range.s), newFlow);
+                case "s" -> new PairRange(new ShapeRange(range.x, range.m, range.a, new Range(range.s.min, Math.min(range.s.max, value - 1))), newFlow);
+                default -> throw new IllegalStateException("Unexpected value: " + field);
+            };
+        }
+
+        public long getSum() {
+            return (long) range.x.getRange() * range.m.getRange() * range.a.getRange() * range.s.getRange();
         }
     }
 }
