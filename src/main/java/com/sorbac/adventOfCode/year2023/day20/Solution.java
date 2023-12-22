@@ -1,5 +1,7 @@
 package com.sorbac.adventOfCode.year2023.day20;
 
+import com.sorbac.adventOfCode.common.Calculator;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,11 +27,12 @@ public class Solution {
         long part1Answer = getPart1Answer(lines1);
         System.out.println(part1Answer);
 
-        List<String> lines2 = new ArrayList<>();
-        while (in2.hasNextLine()) {
-            lines2.add(in2.nextLine());
-        }
-        System.out.println(getPart2Answer(lines2));
+//        List<String> lines2 = new ArrayList<>();
+//        while (in2.hasNextLine()) {
+//            lines2.add(in2.nextLine());
+//        }
+//        System.out.println(getPart2Answer(lines2));
+        System.out.println(Calculator.lcm(4019, 4003, 3947, 3793));
     }
 
     private static long getPart1Answer(List<String> lines) {
@@ -84,6 +87,7 @@ public class Solution {
 
     private static long getPart2Answer(List<String> lines) {
         Map<String, MyModule> map = readInput(lines);
+        map.put("rx", new SingleLow("rx", new ArrayList<>(), map));
         long pushes = 0;
         while (++pushes > 0) {
             List<Tuple<String, String, Pulse>> cur = new ArrayList<>();
@@ -93,18 +97,18 @@ public class Solution {
                 List<Tuple<String, String, Pulse>> next = new ArrayList<>();
                 for (Tuple<String, String, Pulse> tuple : cur) {
                     MyModule module = map.get(tuple.toModule);
-                    if (module != null) next.addAll(module.process(tuple.fromModule, tuple.pulse));
+                    if (module != null) next.addAll(module.process(tuple.fromModule, tuple.pulse, pushes));
                 }
-                List<Tuple<String, String, Pulse>> rxSignals = next.stream()
-                        .filter(tuple -> Objects.equals(tuple.toModule, "rx")).toList();
-                rxLow += rxSignals.stream().filter(tuple -> tuple.pulse == Pulse.LOW).count();
-                if (rxSignals.stream()
-                        .map(t -> map.get(t.fromModule))
-                        .filter(mod -> mod instanceof Conjunction)
-                        .anyMatch(con -> ((Conjunction) con).modulePulses.containsValue(Pulse.HIGH))) {
-                    System.out.println("Pushes: " + pushes);
-                    System.out.println(rxSignals.stream().map(t -> map.get(t.fromModule).serialize()).collect(Collectors.joining(" ")));
-                }
+//                List<Tuple<String, String, Pulse>> rxSignals = next.stream()
+//                        .filter(tuple -> Objects.equals(tuple.toModule, "rx")).toList();
+//                rxLow += rxSignals.stream().filter(tuple -> tuple.pulse == Pulse.LOW).count();
+//                if (rxSignals.stream()
+//                        .map(t -> map.get(t.fromModule))
+//                        .filter(mod -> mod instanceof Conjunction)
+//                        .anyMatch(con -> ((Conjunction) con).modulePulses.containsValue(Pulse.HIGH))) {
+//                    System.out.println("Pushes: " + pushes);
+//                    System.out.println(rxSignals.stream().map(t -> map.get(t.fromModule).serialize()).collect(Collectors.joining(" ")));
+//                }
 
                 cur = next;
             }
@@ -114,6 +118,7 @@ public class Solution {
             }
         }
         return -1;
+        //240853834793347
     }
 
     private static Map<String, MyModule> readInput(List<String> lines) {
@@ -150,6 +155,10 @@ public class Solution {
     }
 
     interface MyModule {
+        default List<Tuple<String, String, Pulse>> process(String fromModule, Pulse pulse, Long pushes) {
+            return process(fromModule, pulse);
+        }
+
         List<Tuple<String, String, Pulse>> process(String fromModule, Pulse pulse);
         String serialize();
     }
@@ -232,6 +241,36 @@ public class Solution {
                     .sorted(Map.Entry.comparingByKey())
                     .map(entry -> entry.getKey() + "-" + entry.getValue())
                     .collect(Collectors.joining("-"));
+        }
+    }
+
+    private static class SingleLow extends ModuleImpl {
+        final Map<String, List<Long>> lowOccurences = new HashMap<>();
+
+        public SingleLow(String name, List<String> moduleNames, Map<String, MyModule> map) {
+            super(name, moduleNames, map);
+        }
+
+        @Override
+        public List<Tuple<String, String, Pulse>> process(String fromModule, Pulse pulse) {
+            return null;
+        }
+
+        @Override
+        public List<Tuple<String, String, Pulse>> process(String fromModule, Pulse pulse, Long pushes) {
+            MyModule fromMod = map.get(fromModule);
+            if (fromMod instanceof Conjunction) {
+                Conjunction conjunction = (Conjunction) fromMod;
+                conjunction.modulePulses.entrySet().stream().filter(e -> e.getValue() == Pulse.HIGH)
+                        .forEach(e ->
+                lowOccurences.computeIfAbsent(fromModule + "-" + e.getKey(), k -> new ArrayList<>()).add(pushes));
+            }
+            return new ArrayList<>();
+        }
+
+        @Override
+        public String serialize() {
+            return null;
         }
     }
 
