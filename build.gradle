@@ -1,20 +1,16 @@
 plugins {
     id 'java'
+    id "io.freefair.lombok" version "8.4"
 }
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://artifactory.pstg-inf.net/artifactory/pstg-maven-official"
-    }
-
 }
 
 apply plugin: 'java'
 
 dependencies {
-    implementation 'org.projectlombok:lombok:1.18.22'
-    testImplementation group: 'org.testng', name: 'testng', version: '[6.11]'
+    testImplementation group: 'org.testng', name: 'testng', version: '7.8.0'
     testImplementation group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 }
 
