@@ -1,5 +1,8 @@
 package com.sorbac.adventOfCode.year2023.day21;
 
+import com.sorbac.adventOfCode.common.LocInt;
+import com.sorbac.adventOfCode.common.Pair;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,23 +41,23 @@ public class Solution {
     }
 
     private static long getPart1Answer(List<String> lines) {
-        Pos start = findStart(lines);
-        Set<Pos> current = new HashSet<>();
+        LocInt start = findStart(lines);
+        Set<LocInt> current = new HashSet<>();
         current.add(start);
         for (int i = 0; i < 64; i++) {
-            Set<Pos> next = new HashSet<>();
-            for (Pos pos : current) {
+            Set<LocInt> next = new HashSet<>();
+            for (LocInt pos : current) {
                 if(isValid(lines, pos.row() - 1, pos.col())) {
-                    next.add(new Pos(pos.row() - 1, pos.col()));
+                    next.add(new LocInt(pos.row() - 1, pos.col()));
                 }
                 if (isValid(lines, pos.row() + 1, pos.col())) {
-                    next.add(new Pos(pos.row() + 1, pos.col()));
+                    next.add(new LocInt(pos.row() + 1, pos.col()));
                 }
                 if (isValid(lines, pos.row(), pos.col() - 1)) {
-                    next.add(new Pos(pos.row(), pos.col() - 1));
+                    next.add(new LocInt(pos.row(), pos.col() - 1));
                 }
                 if (isValid(lines, pos.row(), pos.col() + 1)) {
-                    next.add(new Pos(pos.row(), pos.col() + 1));
+                    next.add(new LocInt(pos.row(), pos.col() + 1));
                 }
             }
             current = next;
@@ -63,23 +66,23 @@ public class Solution {
     }
 
     private static long getPart2TryAnswer(List<String> lines, int steps) {
-        Pos start = findStart(lines);
-        Set<Pos> current = new HashSet<>();
+        LocInt start = findStart(lines);
+        Set<LocInt> current = new HashSet<>();
         current.add(start);
         for (int i = 0; i < steps; i++) {
-            Set<Pos> next = new HashSet<>();
-            for (Pos pos : current) {
+            Set<LocInt> next = new HashSet<>();
+            for (LocInt pos : current) {
                 if(isValid2(lines, pos.row() - 1, pos.col())) {
-                    next.add(new Pos(pos.row() - 1, pos.col()));
+                    next.add(new LocInt(pos.row() - 1, pos.col()));
                 }
                 if (isValid2(lines, pos.row() + 1, pos.col())) {
-                    next.add(new Pos(pos.row() + 1, pos.col()));
+                    next.add(new LocInt(pos.row() + 1, pos.col()));
                 }
                 if (isValid2(lines, pos.row(), pos.col() - 1)) {
-                    next.add(new Pos(pos.row(), pos.col() - 1));
+                    next.add(new LocInt(pos.row(), pos.col() - 1));
                 }
                 if (isValid2(lines, pos.row(), pos.col() + 1)) {
-                    next.add(new Pos(pos.row(), pos.col() + 1));
+                    next.add(new LocInt(pos.row(), pos.col() + 1));
                 }
             }
             current = next;
@@ -91,12 +94,12 @@ public class Solution {
         return row >= 0 && row < lines.size() && col >= 0 && col < lines.get(row).length() && lines.get(row).charAt(col) != '#';
     }
 
-    private static Pos findStart(List<String> lines) {
+    private static LocInt findStart(List<String> lines) {
         return IntStream.range(0, lines.size())
                 .mapToObj(row -> IntStream.range(0, lines.get(row).length())
                     .mapToObj(col -> {
                         if (lines.get(row).charAt(col) == 'S') {
-                            return new Pos(row, col);
+                            return new LocInt(row, col);
                         }
                         return null;
                     }).filter(Objects::nonNull).toList()
@@ -107,8 +110,8 @@ public class Solution {
     }
 
     private static long getPart2Answer(List<String> lines) {
-        Pos start = findStart(lines);
-        Map<Pair<Pos, Integer>, Set<Pos>> cache = new HashMap<>();
+        LocInt start = findStart(lines);
+        Map<Pair<LocInt, Integer>, Set<LocInt>> cache = new HashMap<>();
         IntStream.range(1, 100).forEach(
                 i -> {
                     System.out.println("Steps :" + i);
@@ -118,39 +121,39 @@ public class Solution {
         return 0;
     }
 
-    private static Set<Pos> getDistinctTiles(List<String> lines, Pos pos, int steps, Map<Pair<Pos, Integer>, Set<Pos>> cache) {
-        Set<Pos> positions = new HashSet<>();
-        Set<Pos> cacheRes = cache.get(new Pair<>(pos, steps));
+    private static Set<LocInt> getDistinctTiles(List<String> lines, LocInt pos, int steps, Map<Pair<LocInt, Integer>, Set<LocInt>> cache) {
+        Set<LocInt> positions = new HashSet<>();
+        Set<LocInt> cacheRes = cache.get(new Pair<>(pos, steps));
         if (cacheRes != null) {
             return cacheRes;
         }
         if (steps == 1) {
             if(isValid2(lines, pos.row() - 1, pos.col())) {
-                positions.add(new Pos(pos.row() - 1, pos.col()));
+                positions.add(new LocInt(pos.row() - 1, pos.col()));
             }
             if (isValid2(lines, pos.row() + 1, pos.col())) {
-                positions.add(new Pos(pos.row() + 1, pos.col()));
+                positions.add(new LocInt(pos.row() + 1, pos.col()));
             }
             if (isValid2(lines, pos.row(), pos.col() - 1)) {
-                positions.add(new Pos(pos.row(), pos.col() - 1));
+                positions.add(new LocInt(pos.row(), pos.col() - 1));
             }
             if (isValid2(lines, pos.row(), pos.col() + 1)) {
-                positions.add(new Pos(pos.row(), pos.col() + 1));
+                positions.add(new LocInt(pos.row(), pos.col() + 1));
             }
             cache.put(new Pair<>(pos, steps), positions);
             return positions;
         }
         if(isValid2(lines, pos.row() - 1, pos.col())) {
-            positions.addAll(getDistinctTiles(lines, new Pos(pos.row() - 1, pos.col()), steps - 1, cache));
+            positions.addAll(getDistinctTiles(lines, new LocInt(pos.row() - 1, pos.col()), steps - 1, cache));
         }
         if (isValid2(lines, pos.row() + 1, pos.col())) {
-            positions.addAll(getDistinctTiles(lines, new Pos(pos.row() + 1, pos.col()), steps - 1, cache));
+            positions.addAll(getDistinctTiles(lines, new LocInt(pos.row() + 1, pos.col()), steps - 1, cache));
         }
         if (isValid2(lines, pos.row(), pos.col() - 1)) {
-            positions.addAll(getDistinctTiles(lines, new Pos(pos.row(), pos.col() - 1), steps - 1, cache));
+            positions.addAll(getDistinctTiles(lines, new LocInt(pos.row(), pos.col() - 1), steps - 1, cache));
         }
         if (isValid2(lines, pos.row(), pos.col() + 1)) {
-            positions.addAll(getDistinctTiles(lines, new Pos(pos.row(), pos.col() + 1), steps - 1, cache));
+            positions.addAll(getDistinctTiles(lines, new LocInt(pos.row(), pos.col() + 1), steps - 1, cache));
         }
         cache.put(new Pair<>(pos, steps), positions);
         return positions;
@@ -162,13 +165,5 @@ public class Solution {
         int modRow = ((row % maxRow) + maxRow) % maxRow;
         int modCol = ((col % maxCol) + maxCol) % maxCol;
         return lines.get(modRow).charAt(modCol) != '#';
-    }
-
-    private  record Pos(int row, int col) {}
-
-    private record Pair<A, B>(A a, B b) {}
-
-    private enum Dir {
-        UP, DOWN, LEFT, RIGHT
     }
 }
