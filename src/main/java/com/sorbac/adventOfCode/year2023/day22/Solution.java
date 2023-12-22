@@ -1,54 +1,67 @@
 package com.sorbac.adventOfCode.year2023.day22;
 
+import com.sorbac.adventOfCode.common.Day;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
-public class Solution {
+public class Solution extends Day {
 
     public static void main(String[] args) throws FileNotFoundException {
-//        Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/test1.txt"))));
+        Scanner inTest1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/test1.txt"))));
 //        Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/test11.txt"))));
         Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/input1.txt"))));
-        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/test2.txt"))));
+        Scanner inTest2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/test2.txt"))));
 //        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/test22.txt"))));
-//        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/input2.txt"))));
+        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/input2.txt"))));
 
-        List<String> lines1 = new ArrayList<>();
-        while (in1.hasNextLine()) {
-            lines1.add(in1.nextLine());
-        }
+        System.out.println("Part 1");
+        List<String> linesTest1 = Day.readLines(inTest1);
+        long part1TestAnswer = getPart1Answer(linesTest1);
+        System.out.println("Test: " + part1TestAnswer + (part1TestAnswer == 530 ? " OK" : " NOT OK"));
+
+        List<String> lines1 = Day.readLines(in1);
         long part1Answer = getPart1Answer(lines1);
-        System.out.println(part1Answer);
+        System.out.println("Problem: " + part1Answer);
 
-        List<String> lines2 = new ArrayList<>();
-        while (in2.hasNextLine()) {
-            lines2.add(in2.nextLine());
-        }
+        System.out.println();
+        System.out.println("Part 2");
+        List<String> linesTest2 = Day.readLines(inTest2);
+        long part2TestAnswer = getPart2Answer(linesTest2);
+        System.out.println("Test: " + part2TestAnswer + (part1TestAnswer == 7 ? " OK" : " NOT OK"));
+
+        List<String> lines2 = Day.readLines(in2);
         long part2Answer = getPart2Answer(lines2);
-        System.out.println(part2Answer);
+        System.out.println("Problem: " + part2Answer);
         // too high 120091
         // too high 137181
         // not correct 2355
         // not correct 2720
+        // not correct 82555
+        // not correct 82042
+        // not correct 43814
     }
 
     private static long getPart1Answer(List<String> lines) {
         List<Pair> fallenCubes = getFallenCubes(lines);
 
-        List<Pair> canBeDisintegrated = fallenCubes.stream()
+        List<Pair> canBeDisintegrated = getCanBeDisintegrated(fallenCubes);
+        return canBeDisintegrated.size();
+    }
+
+    private static List<Pair> getCanBeDisintegrated(List<Pair> fallenCubes) {
+        return fallenCubes.stream()
                 .filter(cube -> fallenCubes.stream()
-                        .filter(c -> cube.end.z + 1 == c.start.z)
+                        .filter(c -> c.isRightAbove(cube) && cube.isRightBelow(c))
                         .mapToInt(above -> {
                             List<Pair> belows = fallenCubes.stream()
-                                    .filter(c -> c.end.z + 1 == above.start.z).toList();
+                                    .filter(c -> c.isRightBelow(above) && above.isRightAbove(c)).toList();
                             List<Pair> belowAbove = new ArrayList<>(belows.stream().filter(below ->
-                                    isOverlap(above.start.x, above.end.x, below.start.x, below.end.x)
-                                            && isOverlap(above.start.y, above.end.y, below.start.y, below.end.y)).toList());
+                                    below.isOverlapOf(above) && above.isOverlapOf(below)).toList());
                             belowAbove.remove(cube);
                             return belowAbove.size();
                         })
@@ -56,7 +69,6 @@ public class Solution {
                         .findAny()
                         .isEmpty()
                 ).toList();
-        return canBeDisintegrated.size();
     }
 
     private static long getPart2Answer(List<String> lines) {
@@ -67,10 +79,12 @@ public class Solution {
         fallenCubes.forEach(cube -> supportOf.put(cube, cube.supportOf(fallenCubes)));
         fallenCubes.forEach(cube -> supportedBy.put(cube, cube.supportedBy(fallenCubes)));
 
-        LongStream longStream = fallenCubes.stream()
-                .mapToLong(cube -> dropCount(cube, supportOf, supportedBy));
-        return longStream
-                .sum();
+        fallenCubes.removeAll(getCanBeDisintegrated(fallenCubes));
+        List<Long> values = fallenCubes.stream()
+                .mapToLong(cube -> dropCount(cube, supportOf, supportedBy))
+                .boxed()
+                .toList();
+        return values.stream().mapToLong(Long::longValue).sum();
     }
 
     private static long dropCount(Pair cube, Map<Pair, Set<Pair>> supportOf, Map<Pair, Set<Pair>> supportedBy) {
@@ -78,13 +92,13 @@ public class Solution {
         Set<Pair> cur = new HashSet<>();
         cur.add(cube);
         while (!cur.isEmpty()) {
-            Set<Pair> curLocal = cur;
-            Set<Pair> potentialDrops = curLocal.stream()
+            Set<Pair> curDrop = cur;
+            Set<Pair> potentialDrops = curDrop.stream()
                     .map(supportOf::get)
                     .flatMap(Set::stream)
                     .collect(Collectors.toSet());
             Set<Pair> actualDrops = potentialDrops.stream()
-                    .filter(c -> supportedBy.get(c).containsAll(curLocal)).collect(Collectors.toSet());
+                    .filter(c -> curDrop.containsAll(supportedBy.get(c))).collect(Collectors.toSet());
             dropped += actualDrops.size();
             cur = actualDrops;
         }
@@ -132,21 +146,21 @@ public class Solution {
         }
 
         public Set<Pair> supportOf(List<Pair> cubes) {
-            return cubes.stream().filter(cube -> isOverlapOf(cube) && isBelow(cube))
+            return cubes.stream().filter(cube -> this.isOverlapOf(cube) && this.isRightBelow(cube))
                     .collect(Collectors.toSet());
         }
 
         public Set<Pair> supportedBy(List<Pair> cubes) {
-            return cubes.stream().filter(cube -> isOverlapOf(cube) && isAbove(cube))
+            return cubes.stream().filter(cube -> this.isOverlapOf(cube) && this.isRightAbove(cube))
                     .collect(Collectors.toSet());
         }
 
-        private boolean isAbove(Pair cube) {
-            return cube.start.z == this.start.z - 1;
+        private boolean isRightAbove(Pair cube) {
+            return this.start.z - 1 == cube.end.z ;
         }
 
-        private boolean isBelow(Pair cube) {
-            return cube.start.z == this.end.z + 1;
+        private boolean isRightBelow(Pair cube) {
+            return this.end.z + 1 == cube.start.z;
         }
 
         public boolean isOverlapOf(Pair cube) {
