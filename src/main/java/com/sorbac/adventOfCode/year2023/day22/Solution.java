@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Solution extends Day {
+public class Solution {
 
     public static void main(String[] args) throws FileNotFoundException {
         Scanner inTest1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day22/test1.txt"))));

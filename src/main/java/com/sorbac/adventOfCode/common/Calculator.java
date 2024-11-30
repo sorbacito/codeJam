@@ -1,5 +1,8 @@
 package com.sorbac.adventOfCode.common;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public enum Calculator {
     ;
 
@@ -22,5 +25,43 @@ public enum Calculator {
             result = lcm(result, numbers[i]);
         }
         return result;
+    }
+
+    public static Set<Long> findAllDivisors(long number) {
+        Set<Long> divisors = new HashSet<>();
+        for (long i = 1; i <= Math.sqrt(number); i++) {
+            if (number % i == 0) {
+                divisors.add(i);
+                if (i != number / i) {
+                    divisors.add(number / i);
+                }
+            }
+        }
+        return divisors;
+    }
+
+    public static Set<Long> primeFactors(long number) {
+        Set<Long> factors = new HashSet<>();
+        // Divide by 2 until the number is odd
+        while (number % 2 == 0) {
+            factors.add(2L);
+            number /= 2;
+        }
+
+        // Number must be odd at this point, so we can skip one element (Note i = i + 2)
+        for (long i = 3; i <= Math.sqrt(number); i += 2) {
+            // While i divides number, add i and divide number
+            while (number % i == 0) {
+                factors.add(i);
+                number /= i;
+            }
+        }
+
+        // If number is a prime number greater than 2
+        if (number > 2) {
+            factors.add(number);
+        }
+
+        return factors;
     }
 }

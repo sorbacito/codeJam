@@ -1,5 +1,7 @@
 package com.sorbac.adventOfCode.year2023.day12;
 
+import com.sorbac.adventOfCode.common.Tuple;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -160,10 +162,4 @@ public class Solution {
             }
         };
     }
-    public record Tuple<A, B, C>(A a, B b, C c) {
-        public static <A, B, C> Tuple<A, B, C> of(A a, B b, C c) {
-            return new Tuple(a, b, c);
-        }
-    }
-
 }
