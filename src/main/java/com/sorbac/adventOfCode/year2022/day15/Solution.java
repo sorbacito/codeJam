@@ -38,27 +38,45 @@ public class Solution {
         Scanner in = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream(INPUT_FILE))));
 //        Scanner in = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream(TEST_FILE))));
         List<CaveSensor> sensors = new ArrayList<>();
-        Map<Integer, List<CaveBeacon>> beaconsByLine = new HashMap<>();
-        while (in.hasNext()) {
-            in.useDelimiter("Sensor at x=");
-            in.next();
-            int sX = in.nextInt();
-            in.next(", ");
-            int sY = in.nextInt();
-            in.next(": closest beacon is at x=");
-            int bX = in.nextInt();
-            in.next(", y=");
-            int bY = in.nextInt();
-            CaveBeacon beacon = new CaveBeacon(bX, bY);
-            beaconsByLine.merge(bY, List.of(beacon), (orig, newB) -> {
-                ArrayList<CaveBeacon> caveBeacons = new ArrayList<>();
-                caveBeacons.addAll(orig);
-                caveBeacons.addAll(newB);
-                return caveBeacons;
-            });
-            sensors.add(new CaveSensor(sX, sY, beacon));
+        Map<Integer, Set<CaveBeacon>> beaconsByLine = new HashMap<>();
+        while (in.hasNextLine()) {
+            Matcher matcher = linePattern.matcher(in.nextLine());
+            if (matcher.matches()) {
+                int sX = Integer.parseInt(matcher.group(1));
+                int sY = Integer.parseInt(matcher.group(2));
+                int bX = Integer.parseInt(matcher.group(3));
+                int bY = Integer.parseInt(matcher.group(4));
+                CaveBeacon beacon = new CaveBeacon(bX, bY);
+                beaconsByLine.merge(bY, new HashSet<>(List.of(beacon)), (oldVal, newVal) -> {
+                    oldVal.addAll(newVal);
+                    return oldVal;
+                });
+                sensors.add(new CaveSensor(sX, sY, beacon));
+            }
         }
-        System.out.println(new Solution(sensors, beaconsByLine).getLineCoverage(10));
+        System.out.println(new Solution(sensors, beaconsByLine).getLineCoverage(2000000));
+        System.out.println(new Solution(sensors, beaconsByLine).getTuningFrequency(4000000));
+    }
+
+    private BigDecimal getTuningFrequency(int maxCoordinates) {
+        for (int line = 0; line < maxCoordinates; line++) {
+//            if (line%1000 == 0) System.out.println(line);
+            int curLine = line;
+            List<Range> ranges = new ArrayList<>(sensors.stream().map(s -> s.getCoverageRange(curLine)).filter(Optional::isPresent).map(Optional::get).toList());
+            ranges.sort(Comparator.comparingInt((Range r) -> r.min).thenComparingInt(r -> r.max));
+            int maxY = 0;
+            for (Range range : ranges) {
+                if (range.min > maxY + 1)
+                    return calculateTuningFrequency(line, range.min - 1);
+                maxY = Math.max(maxY, range.max);
+                if (maxY >= maxCoordinates) break;
+            }
+        }
+        return BigDecimal.ZERO;
+    }
+
+    private BigDecimal calculateTuningFrequency(int y, int x) {
+        return BigDecimal.valueOf(x).multiply(BigDecimal.valueOf(4000000)).add(BigDecimal.valueOf(y));
     }
 
     private int getLineCoverage(int line) {
@@ -97,7 +115,11 @@ public class Solution {
         }
     }
 
-    private static class CaveBeacon {
+    record Range(int min, int max) {
+    }
+
+    @Getter
+    static class CaveBeacon {
         final int col;
         final int row;
 

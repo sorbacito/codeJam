@@ -1,10 +1,17 @@
 package com.sorbac.adventOfCode.year2022.day14;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 @Data

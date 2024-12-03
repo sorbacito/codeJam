@@ -100,8 +100,43 @@ public class Solution {
     }
 
     private static long getPart2Answer(List<String> lines) {
-        return 0;
+        List<Pos> positions = new ArrayList<>();
+        Pos cur = new Pos(0, 0);
+        for (String line : lines) {
+            String[] s = line.split(" ");
+            String hexVal = s[2].split("\\)")[0].split("\\(#")[1];
+            char dir = hexVal.charAt(hexVal.length() - 1);
+            int len = Converter.hexToInteger(hexVal.substring(0, hexVal.length() - 1));
+            if (dir == '2') { // L
+                cur = new Pos(cur.y, cur.x - len);
+            }
+            if (dir == '3') { // U
+                cur = new Pos(cur.y - len, cur.x);
+            }
+            if (dir == '0') { // R
+                cur = new Pos(cur.y, cur.x + len);
+            }
+            if (dir == '1') { // D
+                cur = new Pos(cur.y + len, cur.x);
+            }
+            positions.add(cur);
+        }
+
+        return calculateArea(positions);
     }
 
-    private record Pos(Integer row, Integer col) {}
+    private static long calculateArea(List<Pos> positions) {
+        List<Pair<Pos, Pos>> pairList = IntStream.range(0, positions.size())
+                .mapToObj(i -> new Pair<>(positions.get(i), positions.get((i + 1) % positions.size()))).toList();
+        long around = pairList.stream()
+                .mapToLong(p -> Math.abs(p.left().y - p.right().y) + Math.abs(p.left().x - p.right().x))
+                .sum();
+        long inside = pairList.stream()
+                .mapToLong(p -> (long) (p.left().y + p.right().y) * (p.left().x - p.right().x))
+                .sum();
+        return around / 2 + Math.abs(inside) / 2 + 1;
+    }
+
+    private record Pos(Integer y, Integer x) {
+    }
 }
