@@ -32,14 +32,14 @@ public class Day7 extends Day2016 {
 
     @Override
     protected Object part1() {
-        return (int) dayStream()
+        return (int) dayStreamLines()
                 .map(Day7::splitToInsideOutside)
                 .filter(Day7::supportsTLS).count();
     }
 
     @Override
     protected Object part2() {
-        return (int) dayStream()
+        return (int) dayStreamLines()
                 .map(Day7::splitToInsideOutside)
                 .filter(Day7::supportsSSL).count();
     }

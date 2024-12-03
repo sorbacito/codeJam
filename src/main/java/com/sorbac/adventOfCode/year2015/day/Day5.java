@@ -38,7 +38,7 @@ public class Day5 extends Day2015 {
 
     @Override
     protected Object part1() {
-        return dayStream().filter(this::isNice1).count();
+        return dayStreamLines().filter(this::isNice1).count();
     }
 
     private boolean isNice1(String s) {
@@ -57,7 +57,7 @@ public class Day5 extends Day2015 {
 
     @Override
     protected Object part2() {
-        return dayStream().filter(this::isNice2).count();
+        return dayStreamLines().filter(this::isNice2).count();
     }
 
     private boolean isNice2(String s) {

@@ -22,7 +22,7 @@ public class Day16 extends Day2015 {
 
     @Override
     protected Object part1() {
-        List<List<String>> sues = dayStream().map(Day16::parseSue).toList();
+        List<List<String>> sues = dayStreamLines().map(Day16::parseSue).toList();
         for (int i = 0; i < sues.size(); i++) {
             List<String> sue = sues.get(i);
             if (Arrays.stream(("children: 3\n" +
@@ -48,7 +48,7 @@ public class Day16 extends Day2015 {
 
     @Override
     protected Object part2() {
-        List<List<String>> sues = dayStream().map(Day16::parseSue).toList();
+        List<List<String>> sues = dayStreamLines().map(Day16::parseSue).toList();
         for (int i = 0; i < sues.size(); i++) {
             List<String> sue = sues.get(i);
             List<String> basicSue = sue.stream().filter(s -> s.startsWith("children") || s.startsWith("samoyeds") || s.startsWith("akitas")

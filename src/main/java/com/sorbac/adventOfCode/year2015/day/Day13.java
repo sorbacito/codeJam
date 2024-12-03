@@ -59,7 +59,7 @@ public class Day13 extends Day2015 {
     }
 
     private Map<String, List<Pair<String, Integer>>> loadHappiness() {
-        return dayStream().map(Day13::parseLine)
+        return dayStreamLines().map(Day13::parseLine)
                 .collect(Collectors.toMap(Tuple::a, t -> new ArrayList<>() {{
                     add(new Pair<>(t.b(), t.c()));
                 }}, (a, b) -> {

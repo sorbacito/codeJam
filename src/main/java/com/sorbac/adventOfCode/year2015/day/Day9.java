@@ -55,7 +55,7 @@ public class Day9 extends Day2015 {
                 .allowingSelfLoops(false)
                 .edgeSupplier(DefaultWeightedEdge::new)
                 .weighted(true).buildGraph();
-        dayStream().forEach(s -> {
+        dayStreamLines().forEach(s -> {
             String[] edgeWeight = s.split(" = ");
             String[] vertices = edgeWeight[0].split(" to ");
             Arrays.stream(vertices).forEach(graph::addVertex);

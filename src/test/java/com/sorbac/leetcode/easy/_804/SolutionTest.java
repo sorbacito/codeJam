@@ -1,5 +1,6 @@
 package com.sorbac.leetcode.easy._804;
 
+import com.sorbac.leetcode.easy._977.Solution;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -16,8 +17,7 @@ public class SolutionTest {
     }
 
     @Test(dataProvider = "dp")
-    public void testSolution(String[] words, int expectedResult) {
-        assertThat(new Solution().uniqueMorseRepresentations(words), is(expectedResult));
+    public void testSolution(int[] nums, int[] expectedResult) {
+        assertThat(new Solution().sortedSquares(nums), is(expectedResult));
     }
-
 }

@@ -3,7 +3,12 @@ package com.sorbac.adventOfCode.year2015.day;
 import com.sorbac.adventOfCode.common.Pair;
 import com.sorbac.adventOfCode.year2015.Day2015;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Day19 extends Day2015 {
@@ -56,11 +61,11 @@ public class Day19 extends Day2015 {
     }
 
     private String loadMolecule() {
-        return dayStream().filter(line -> !line.isEmpty() && !line.contains("=>")).findFirst().orElseThrow();
+        return dayStreamLines().filter(line -> !line.isEmpty() && !line.contains("=>")).findFirst().orElseThrow();
     }
 
     private Map<String, Set<String>> loadReplacements() {
-        return dayStream().filter(line -> line.contains("=>"))
+        return dayStreamLines().filter(line -> line.contains("=>"))
                 .map(line -> line.split(" => "))
                 .collect(Collectors.toMap(line -> line[0], line -> new HashSet<>() {{
                     add(line[1]);

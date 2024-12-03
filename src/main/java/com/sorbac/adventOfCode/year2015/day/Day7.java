@@ -46,7 +46,7 @@ public class Day7 extends Day2015 {
                 return () -> i;
             }
         };
-        dayStream().forEach(s -> {
+        dayStreamLines().forEach(s -> {
             String[] split = s.split(" -> ");
             circuit.put(split[1], createSupplier(split[0], circuit));
         });

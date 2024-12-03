@@ -28,21 +28,21 @@ public class Day8 extends Day2015 {
 
     @Override
     protected Object part1() {
-        int afterEscapingCount = dayStream().map(s -> s.substring(1, s.length() - 1))
+        int afterEscapingCount = dayStreamLines().map(s -> s.substring(1, s.length() - 1))
                 .map(s -> s.replaceAll("\\\\\\\\", "\\\\"))
                 .map(s -> s.replaceAll("\\\\\"", "\""))
                 .map(s -> s.replaceAll("\\\\x[a-f0-9]{2}", "a"))
                 .mapToInt(String::length)
                 .sum();
-        return dayStream().mapToInt(String::length).sum() - afterEscapingCount;
+        return dayStreamLines().mapToInt(String::length).sum() - afterEscapingCount;
     }
 
     @Override
     protected Object part2() {
-        int afterAddingEscapeCharsSum = dayStream().map(s -> s.replaceAll("\\\\", "\\\\\\\\"))
+        int afterAddingEscapeCharsSum = dayStreamLines().map(s -> s.replaceAll("\\\\", "\\\\\\\\"))
                 .map(s -> s.replaceAll("\"", "\\\\\""))
                 .map(s -> "\"" + s + "\"")
                 .mapToInt(String::length).sum();
-        return afterAddingEscapeCharsSum - dayStream().mapToInt(String::length).sum();
+        return afterAddingEscapeCharsSum - dayStreamLines().mapToInt(String::length).sum();
     }
 }

@@ -26,7 +26,7 @@ public class Day3 extends Day2016 {
 
     @Override
     protected Object part1() {
-        return (int) dayStream().map(line -> line.split("\\s+"))
+        return (int) dayStreamLines().map(line -> line.split("\\s+"))
                 .map(array -> new Tuple<>(Integer.parseInt(array[1]), Integer.parseInt(array[2]), Integer.parseInt(array[3])))
                 .filter(isTriangle())
                 .count();
@@ -34,7 +34,7 @@ public class Day3 extends Day2016 {
 
     @Override
     protected Object part2() {
-        List<Tuple<Integer, Integer, Integer>> list = dayStream().map(line -> line.split("\\s+"))
+        List<Tuple<Integer, Integer, Integer>> list = dayStreamLines().map(line -> line.split("\\s+"))
                 .map(array -> new Tuple<>(Integer.parseInt(array[1]), Integer.parseInt(array[2]), Integer.parseInt(array[3])))
                 .toList();
         List<Tuple<Integer, Integer, Integer>> colTriangles = new ArrayList<>();

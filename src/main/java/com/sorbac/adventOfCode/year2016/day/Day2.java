@@ -41,7 +41,7 @@ public class Day2 extends Day2016 {
     private String solvePart(Loc loc, Grid grid) {
         StringBuilder code = new StringBuilder();
         Predicate<Loc> gridPredicate = gridPredicate(grid);
-        for (String line : dayStream().toList()) {
+        for (String line : dayStreamLines().toList()) {
             for (char step : line.toCharArray()) {
                 switch (step) {
                     case 'U':

@@ -34,12 +34,12 @@ public class Day4 extends Day2016 {
 
     @Override
     protected Object part1() {
-        return dayStream().map(Room::parse).filter(Room::isReal).mapToInt(Room::getMySectorId).sum();
+        return dayStreamLines().map(Room::parse).filter(Room::isReal).mapToInt(Room::getMySectorId).sum();
     }
 
     @Override
     protected Object part2() {
-        return dayStream().map(Room::parse).filter(Room::isReal)
+        return dayStreamLines().map(Room::parse).filter(Room::isReal)
                 .filter(room -> room.shiftCypher().contains("northpole object storage"))
                 .mapToInt(Room::getMySectorId).findFirst().orElseThrow();
     }

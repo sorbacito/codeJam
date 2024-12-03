@@ -39,7 +39,7 @@ public class Day6 extends Day2015 {
     @Override
     protected Object part1() {
         Grid grid = new Day6.GridPart1(1000, 1000);
-        List<Instruction> instructions = dayStream().map(Instruction::parse).toList();
+        List<Instruction> instructions = dayStreamLines().map(Instruction::parse).toList();
         instructions.forEach(grid::apply);
         return grid.count(ON);
     }
@@ -47,7 +47,7 @@ public class Day6 extends Day2015 {
     @Override
     protected Object part2() {
         Grid grid = new Day6.GridPart2(1000, 1000);
-        List<Instruction> instructions = dayStream().map(Instruction::parse).toList();
+        List<Instruction> instructions = dayStreamLines().map(Instruction::parse).toList();
         instructions.forEach(grid::apply);
         return grid.getCharStream().sum();
     }

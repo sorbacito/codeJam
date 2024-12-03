@@ -1,11 +1,17 @@
 package com.sorbac.adventOfCode.year2023.day18;
 
+import com.sorbac.adventOfCode.common.Converter;
+import com.sorbac.adventOfCode.common.Pair;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Scanner;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -16,21 +22,20 @@ public class Solution {
 //        Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day18/test11.txt"))));
         Scanner in1 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day18/input1.txt"))));
 //        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day18/test2.txt"))));
-//        Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day18/test22.txt"))));
         Scanner in2 = new Scanner(new BufferedReader(new InputStreamReader(new FileInputStream("./src/main/java/com/sorbac/adventOfCode/year2023/day18/input2.txt"))));
 
-        List<String> lines1 = new ArrayList<>();
-        while (in1.hasNextLine()) {
-            lines1.add(in1.nextLine());
-        }
-        long part1Answer = getPart1Answer(lines1);
-        System.out.println(part1Answer);
-
-//        List<String> lines2 = new ArrayList<>();
-//        while (in2.hasNextLine()) {
-//            lines2.add(in2.nextLine());
+//        List<String> lines1 = new ArrayList<>();
+//        while (in1.hasNextLine()) {
+//            lines1.add(in1.nextLine());
 //        }
-//        System.out.println(getPart2Answer(lines2));
+//        long part1Answer = getPart1Answer(lines1);
+//        System.out.println(part1Answer);
+
+        List<String> lines2 = new ArrayList<>();
+        while (in2.hasNextLine()) {
+            lines2.add(in2.nextLine());
+        }
+        System.out.println(getPart2Answer(lines2));
     }
 
     private static long getPart1Answer(List<String> lines) {
@@ -75,14 +80,14 @@ public class Solution {
                 List<Pos> notV = new ArrayList<>();
                 Stream.of(-1, 1)
                         .forEach(diff -> {
-                            Pos newP = new Pos(p.row + diff, p.col);
+                            Pos newP = new Pos(p.y + diff, p.x);
                             if (!hole.contains(newP)) {
                                 notV.add(newP);
                             }
                         });
                 Stream.of(-1, 1)
                         .forEach(d -> {
-                            Pos newP = new Pos(p.row, p.col + d);
+                            Pos newP = new Pos(p.y, p.x + d);
                             if (!hole.contains(newP)) {
                                 notV.add(newP);
                             }

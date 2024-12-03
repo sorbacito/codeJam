@@ -1,21 +1,29 @@
 package com.sorbac.adventOfCode.year2022.day14;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Data
-public class Solution {
+public class Solution2 {
     public static final String INPUT_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day14/input.txt";
     public static final String TEST_FILE = "./src/main/java/com/sorbac/adventOfCode/year2022/day14/test.txt";
 
     private final int[][] cave;
     private final int stoneMax;
 
-    private static Solution createSolution(List<List<int[]>> rockLines) {
+    private static Solution2 createSolution(List<List<int[]>> rockLines) {
         int limit = 1000;
         int[][] cave = new int[limit][limit];
         int maxHor = 0;
@@ -38,7 +46,9 @@ public class Solution {
                 previous = current;
             }
         }
-        return new Solution(cave, maxHor);
+        final int floor = maxHor + 2;
+        IntStream.range(0, 1000).forEach(it -> cave[floor][it] = 1);
+        return new Solution2(cave, maxHor + 1);
     }
 
 
@@ -56,7 +66,7 @@ public class Solution {
             }).collect(Collectors.toList());
             rockLines.add(rockLine);
         }
-        Solution solution = createSolution(rockLines);
+        Solution2 solution = createSolution(rockLines);
         System.out.println(solution.getAmountOfRestSand());
     }
 
@@ -73,7 +83,7 @@ public class Solution {
 //                System.out.println("STUCK: [" + grain.x + "," + grain.y + "]");
                 sum++;
             }
-        } while (grain.state != GrainState.FELL);
+        } while (grain.x != 500 || grain.y != 0);
         return sum;
     }
 

@@ -33,13 +33,13 @@ public class Day14 extends Day2015 {
     @Override
     protected Object part1() {
         int time = (int) getArgument();
-        return dayStream().map(Reindeer::of).mapToInt(r -> r.traveledKm(time)).max().orElse(-1);
+        return dayStreamLines().map(Reindeer::of).mapToInt(r -> r.traveledKm(time)).max().orElse(-1);
     }
 
     @Override
     protected Object part2() {
         int time = (int) getArgument();
-        List<Reindeer> reindeers = dayStream().map(Reindeer::of).toList();
+        List<Reindeer> reindeers = dayStreamLines().map(Reindeer::of).toList();
         Map<String, Integer> reinderPoints = reindeers.stream().collect(Collectors.toMap(Reindeer::name, r -> 0));
         for (int i = 1; i <= time; i++) {
             int currentTime = i;

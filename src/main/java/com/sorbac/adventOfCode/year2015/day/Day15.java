@@ -41,7 +41,7 @@ public class Day15 extends Day2015 {
     }
 
     private Integer solvePart(Predicate<List<Ingredient>> isIngredientsValid) {
-        List<Ingredient> ingredients = dayStream().map(Ingredient::parse).toList();
+        List<Ingredient> ingredients = dayStreamLines().map(Ingredient::parse).toList();
         Collection<List<Integer>> amountsCombinations = AoCUtils.allCombinationsOfSum(ingredients.size(), 100);
         return allPermutations(ingredients).stream()
                 .flatMap(ingredientList -> amountsCombinations.stream()
