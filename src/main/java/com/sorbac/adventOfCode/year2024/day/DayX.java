@@ -16,7 +16,7 @@ public class DayX extends Day2024 {
     public static void main(String[] args) {
         new DayX().printParts();
         new DayX("test input 1").printPart1("expected result 1");
-        new DayX("test input 2").printPart1("expected result 2");
+        new DayX("test input 2").printPart2("expected result 2");
     }
 
     @Override
