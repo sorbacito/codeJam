@@ -18,7 +18,7 @@ public class Day4 extends Day2024 {
     }
 
     public static void main(String[] args) {
-        new Day4().printParts();
+        new Day4().printParts(2468, 1864);
         new Day4("MMMSXXMASM\n" +
                 "MSAMXMSMSA\n" +
                 "AMXSXMAAMM\n" +
@@ -45,10 +45,10 @@ public class Day4 extends Day2024 {
     protected Object part1() {
         List<String> input = dayStreamLines().toList();
         List<Loc> possibleXmas = findAllChars(input, 'X');
-        return possibleXmas.stream().mapToInt(loc -> countXmas1(input, loc)).sum();
+        return possibleXmas.stream().mapToInt(loc -> countXmas(input, loc)).sum();
     }
 
-    private int countXmas1(List<String> input, Loc loc) {
+    private int countXmas(List<String> input, Loc loc) {
         int count = 0;
         if (
                 isCharAt(input, loc.left(1), 'M') &&
