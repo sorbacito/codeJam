@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public abstract class Day {
@@ -42,6 +43,27 @@ public abstract class Day {
 
     protected Day(int year, int day, String... lines) {
         this(year, day, String.join(DEFAULT_DELIMITER, lines));
+    }
+
+    protected static void print(List<String> input) {
+        for (String line : input) {
+            System.out.println(line);
+        }
+        System.out.println();
+    }
+
+    public static void print(Character[][] input) {
+        print(input, Function.identity());
+    }
+
+    public static void print(Character[][] input, Function<Character, Character> mapping) {
+        print(Arrays.stream(input).map(row -> {
+            StringBuilder line = new StringBuilder();
+            for (Character c : row) {
+                line.append(mapping.apply(c));
+            }
+            return line.toString();
+        }).toList());
     }
 
     protected List<String> readLines() {
@@ -145,7 +167,7 @@ public abstract class Day {
     }
 
     protected Stream<List<Long>> dayStreamLongs() {
-        return dayStreamLongs(DEFAULT_DELIMITER);
+        return dayStreamLongs(" ");
     }
 
     protected Stream<List<Long>> dayStreamLongs(String delimiter) {
@@ -162,6 +184,15 @@ public abstract class Day {
 
     protected void addTest(String input, long expectedOutput) {
         tests.put(input, expectedOutput);
+    }
+
+    public Character[][] toChar2DArray(List<String> list) {
+        return list.stream()
+                .map(str -> str.chars()
+                        .mapToObj(ch -> (char) ch)
+                        .toArray(Character[]::new))
+                .toArray(Character[][]::new);
+
     }
 
     private record DayPaths(int year, int day) {

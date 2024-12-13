@@ -12,4 +12,5 @@ public abstract class Day2024 extends Day {
     public Day2024(int day, String input) {
         super(YEAR, day, input);
     }
+
 }
